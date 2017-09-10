@@ -11,6 +11,10 @@
 
 #include "SketcherDoc.h"
 #include "SketcherView.h"
+#include "Line.h"
+#include "Rectangle.h"
+#include "Circle.h"
+#include "Curve.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -146,10 +150,29 @@ void CSketcherView::OnLButtonDown(UINT nFlags, CPoint point)
 
 void CSketcherView::OnMouseMove(UINT nFlags, CPoint point)
 {
+	// Define a Device Context object for the view
+	CClientDC aDC{ this };               // DC is for this view
+
 	if (nFlags & MK_LBUTTON)		// Verify the left button is down
 	{
-		m_FirstPoint = point;		// Save the current cursor position
-
+		m_SecondPoint = point;		// Save the current cursor position
+		if (m_pTempElement)
+		{
+			// An element was created previously
+			if (ElementType::CURVE == GetDocument()->GetElementType())   // A curve?
+			{  // We are drawing a curve so add a segment to the existing curve
+				std::dynamic_pointer_cast<CCurve>(m_pTempElement)->AddSegment(m_SecondPoint);
+				m_pTempElement->Draw(&aDC);     // Now draw it
+				return;                         // We are done
+			}
+			else
+			{
+				// If we get to here it's not a curve so
+				// redraw the old element so it disappears from the view
+				aDC.SetROP2(R2_NOTXORPEN);       // Set the drawing mode
+				m_pTempElement->Draw(&aDC);      // Redraw the old element to erase it
+			}
+		}
 		// Test for a previous temporary element
 		{
 			// We get to here if there was a previous mouse move

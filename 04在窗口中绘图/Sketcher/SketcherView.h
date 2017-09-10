@@ -4,7 +4,8 @@
 
 #pragma once
 #include "atltypes.h"
-
+#include "Element.h"
+#include <memory>
 
 class CSketcherView : public CView
 {
@@ -48,6 +49,9 @@ public:
 protected:
 	// First point recorded for an element
 	CPoint m_FirstPoint;
+	CPoint m_SecondPoint;                          // Subsequent point recorded for an element
+												   // Temporary element
+	std::shared_ptr<CElement> m_pTempElement;
 };
 
 #ifndef _DEBUG  // debug version in SketcherView.cpp
