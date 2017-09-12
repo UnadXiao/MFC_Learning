@@ -44,6 +44,39 @@ CSketcherView::CSketcherView()
 
 }
 
+// Create an element of the current type
+std::shared_ptr<CElement> CSketcherView::CreateElement() const
+{
+	// Get a pointer to the document for this view
+	CSketcherDoc* pDoc = GetDocument();
+	ASSERT_VALID(pDoc);		// Verify the pointer is good
+
+	// Get the current element color
+	COLORREF color{ static_cast<COLORREF>(pDoc->GetElementColor()) };
+
+	// Now select the element using the type stored in the document
+	switch (pDoc->GetElementType())
+	{
+	case ElementType::RECTANGLE:
+		return std::make_shared<CRectangle>(m_FirstPoint, m_SecondPoint, color);
+
+	case ElementType::CIRCLE:
+		return std::make_shared<CCircle>(m_FirstPoint, m_SecondPoint, color);
+
+	case ElementType::LINE:
+		return std::make_shared<CLine>(m_FirstPoint, m_SecondPoint, color);
+
+	case ElementType::CURVE:
+		return std::make_shared<CCurve>(m_FirstPoint, m_SecondPoint, color);
+
+	default:
+		// Something's gone wrong
+		AfxMessageBox(_T("Bad Element code"), MB_OK);
+		AfxAbort();
+		return nullptr;
+	}
+}
+
 CSketcherView::~CSketcherView()
 {
 }
@@ -64,28 +97,14 @@ void CSketcherView::OnDraw(CDC* pDC)
 	ASSERT_VALID(pDoc);
 	if (!pDoc)
 		return;
-
-	pDC->MoveTo(50, 50);
-	pDC->LineTo(50, 200);
-	pDC->LineTo(150, 200);
-	pDC->LineTo(150, 50);
-	pDC->LineTo(50, 50);
 	
-	// Declare a pen object and initialize it as
-	// a red solid pen drawing a line 2 pixels wide
-	CPen aPen;
-	aPen.CreatePen(PS_SOLID, 2, RGB(255, 0, 0));
-
-	CPen *pOldPen{ pDC->SelectObject(&aPen) };		// Select aPen as the pen
-
-	pDC->Ellipse(50, 50, 150, 150);		// Draw the 1st (large) circle
-
-	// Define the bounding rectangle for the 2nd (smaller) circle
-	CRect rect{ 250, 50, 300, 100 };
-	CPoint start{ 275, 100 };
-	CPoint end{ 250, 75 };
-	pDC->Arc(&rect, start, end);
-	pDC->SelectObject(pOldPen);
+	// Draw the sketch
+	for (auto iter = pDoc->begin(); iter != pDoc->end(); ++iter)
+		for (const auto& pElement : *pDoc)
+		{
+			if (pDC->RectVisible(pElement->GetEnclosingRect()))
+				pElement->Draw(pDC);
+		}
 }
 
 
@@ -134,15 +153,24 @@ CSketcherDoc* CSketcherView::GetDocument() const // non-debug version is inline
 
 void CSketcherView::OnLButtonUp(UINT nFlags, CPoint point)
 {
-	// TODO: Add your message handler code here and/or call default
-
-	CView::OnLButtonUp(nFlags, point);
+	if (this == GetCapture())
+		ReleaseCapture();		// Stop capturing mouse message
+	// Make sure there is an element
+	if (m_pTempElement)
+	{
+		// Add the element pointer to the sketch
+		GetDocument()->AddElement(m_pTempElement);
+		InvalidateRect(&m_pTempElement->GetEnclosingRect());
+		m_pTempElement.reset();		// Reset the element pointer
+	}
+	//CView::OnLButtonUp(nFlags, point);
 }
 
 
 void CSketcherView::OnLButtonDown(UINT nFlags, CPoint point)
 {
 	m_FirstPoint = point;		// Record the cursor position
+	SetCapture();		// Capture subsequent mouse message
 
 	CView::OnLButtonDown(nFlags, point);
 }
@@ -153,7 +181,8 @@ void CSketcherView::OnMouseMove(UINT nFlags, CPoint point)
 	// Define a Device Context object for the view
 	CClientDC aDC{ this };               // DC is for this view
 
-	if (nFlags & MK_LBUTTON)		// Verify the left button is down
+	// Verify the left button is down and mouse messages are captured
+	if ((nFlags & MK_LBUTTON) && (this == GetCapture()))		// Verify the left button is down
 	{
 		m_SecondPoint = point;		// Save the current cursor position
 		if (m_pTempElement)
@@ -173,13 +202,10 @@ void CSketcherView::OnMouseMove(UINT nFlags, CPoint point)
 				m_pTempElement->Draw(&aDC);      // Redraw the old element to erase it
 			}
 		}
-		// Test for a previous temporary element
-		{
-			// We get to here if there was a previous mouse move
-			// so add code to delete the old element
-		}
-		// Add code to create new element
-		// and cause it to be drawn
+		// Create a temporary element of the type and color that
+		// is recorded in the document object, and draw it
+		m_pTempElement = CreateElement();
+		m_pTempElement->Draw(&aDC);
 	}
 
 	CView::OnMouseMove(nFlags, point);

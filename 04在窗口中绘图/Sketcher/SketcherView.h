@@ -30,6 +30,10 @@ protected:
 	virtual void OnEndPrinting(CDC* pDC, CPrintInfo* pInfo);
 
 // Implementation
+	// Rest of the class definition as before
+protected:
+	// Create a new element on the heap
+	std::shared_ptr<CElement> CreateElement() const;
 public:
 	virtual ~CSketcherView();
 #ifdef _DEBUG

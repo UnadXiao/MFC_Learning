@@ -200,6 +200,18 @@ void CSketcherDoc::OnElemetCurve()
 	m_Element = ElementType::CURVE;		// Set element type as a curve
 }
 
+// Add a sketch element
+void CSketcherDoc::AddElement(std::shared_ptr<CElement>& pElement)
+{
+	m_Sketch.push_back(pElement);
+}
+
+// Delete a sketch element
+void CSketcherDoc::DeleteElement(std::shared_ptr<CElement>& pElement)
+{
+	m_Sketch.remove(pElement);
+}
+
 
 void CSketcherDoc::OnUpdateColorBlack(CCmdUI *pCmdUI)
 {

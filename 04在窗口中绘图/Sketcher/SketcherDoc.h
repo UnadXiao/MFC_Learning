@@ -5,8 +5,13 @@
 
 #pragma once
 
+#include "Element.h"
 #include "ElementType.h"
 #include "ElementColor.h"
+#include <list>
+#include <memory>
+
+using SketchIterator = std::list<std::shared_ptr<CElement>>::const_iterator;
 
 
 class CSketcherDoc : public CDocument
@@ -60,9 +65,18 @@ public:
 
 	ElementType GetElementType() const { return m_Element; }
 	ElementColor GetElementColor() const { return m_Color; }
+	void AddElement(std::shared_ptr<CElement>& pElement);
+	void DeleteElement(std::shared_ptr<CElement>& pElement);
+	//	Provide a begin iterator for the sketch
+	SketchIterator begin() const { return std::begin(m_Sketch); };
+	// Provide an end iterator for the sketch
+	SketchIterator end() const { return std::end(m_Sketch); };
+
 protected:
 	ElementType m_Element {ElementType::LINE};		// Current element type
 	ElementColor m_Color {ElementColor::BLACK};		// Current drawing color
+	std::list<std::shared_ptr<CElement>> m_Sketch;		// A list containing the sketch
+
 public:
 	afx_msg void OnUpdateColorBlack(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateColorRed(CCmdUI *pCmdUI);

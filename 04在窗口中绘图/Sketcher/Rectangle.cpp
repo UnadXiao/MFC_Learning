@@ -35,8 +35,8 @@ CRectangle::CRectangle(const CPoint & start, const CPoint & end, COLORREF color)
 	CElement{start, color}
 {
 	// Normalize the rectangle defining points
-	m_StartPoint = CPoint{ (std::min)(start.x, end.x), (std::min)(start.y, start.y)};
-	m_BottomRight = CPoint{ (std::max)(start.x, end.x), (std::max)(start.y, start.y) };
+	m_StartPoint = CPoint{ (std::min)(start.x, end.x), (std::min)(start.y, end.y)};
+	m_BottomRight = CPoint{ (std::max)(start.x, end.x), (std::max)(start.y, end.y) };
 
 	// Ensure width and height between the points is at least 2
 	if ((m_BottomRight.x - m_StartPoint.x) < 2)

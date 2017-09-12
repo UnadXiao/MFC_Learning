@@ -31,7 +31,8 @@ void CCurve::Draw(CDC * pDC)
 }
 
 // Constructor for a curve object
-CCurve::CCurve(const CPoint & first, const CPoint & second, COLORREF color)
+CCurve::CCurve(const CPoint & first, const CPoint & second, COLORREF color) :
+	CElement{first, color}
 {
 	// Store the second pint in the vector
 	m_Points.push_back(second);
