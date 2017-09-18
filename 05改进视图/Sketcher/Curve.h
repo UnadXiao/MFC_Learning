@@ -9,6 +9,7 @@ class CCurve :
 public:
 	virtual ~CCurve();
 	virtual void Draw(CDC *pDC, std::shared_ptr<CElement> pElement = nullptr) override;		// Function to display a curve
+	virtual void Move(const CSize& aSize) override;
 
 	// Constructor for a curve object
 	CCurve(const CPoint& first, const CPoint& second, COLORREF color);

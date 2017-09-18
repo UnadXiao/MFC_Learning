@@ -6,6 +6,7 @@ class CRectangle :
 public:
 	virtual ~CRectangle();
 	virtual void Draw(CDC *pDC, std::shared_ptr<CElement> pElement = nullptr) override;
+	virtual void Move(const CSize& aSize) override;
 
 	// Constructor for a rectangle object
 	CRectangle(const CPoint& start, const CPoint& end, COLORREF color);

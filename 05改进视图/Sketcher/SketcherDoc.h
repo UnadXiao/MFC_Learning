@@ -14,6 +14,8 @@
 using SketchIterator = std::list<std::shared_ptr<CElement>>::const_iterator;
 
 
+
+
 class CSketcherDoc : public CDocument
 {
 protected: // create from serialization only
@@ -74,6 +76,15 @@ public:
 
 public:
 	std::shared_ptr<CElement> FindElement(const CPoint& point) const;
+
+	void SendToBack(std::shared_ptr<CElement>& pElement)
+	{
+		if (pElement)
+		{
+			m_Sketch.remove(pElement);		// Remove the element from the list
+			m_Sketch.push_back(pElement);		// Put it back at the end of the list
+		}
+	}
 
 protected:
 	ElementType m_Element {ElementType::LINE};		// Current element type

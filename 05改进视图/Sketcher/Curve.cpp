@@ -30,6 +30,15 @@ void CCurve::Draw(CDC *pDC, std::shared_ptr<CElement> pElement)
 	pDC->SelectObject(pOldPen);		// Restore the old pen
 }
 
+void CCurve::Move(const CSize & aSize)
+{
+	m_EnclosingRect += aSize;		// Move the enclosing rectangle
+	m_StartPoint += aSize;		// Move the start point
+	// Now move all the other points
+	for (auto& p : m_Points)
+		p += aSize;
+}
+
 // Constructor for a curve object
 CCurve::CCurve(const CPoint & first, const CPoint & second, COLORREF color) :
 	CElement{first, color}

@@ -28,6 +28,13 @@ void CCircle::Draw(CDC *pDC, std::shared_ptr<CElement> pElement)
 	pDC->SelectObject(pOldPen);		// Restore the old pen
 }
 
+void CCircle::Move(const CSize & aSize)
+{
+	m_StartPoint += aSize;		// Move the start point
+	m_BottomRight += aSize;		// and the bottom right point
+	m_EnclosingRect += aSize;		// Move the enclosing rectangle
+}
+
 // Constructor for a circle object
 CCircle::CCircle(const CPoint & start, const CPoint & end, COLORREF color) :
 	CElement{start, color}

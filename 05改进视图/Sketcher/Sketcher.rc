@@ -73,6 +73,8 @@ BEGIN
     BEGIN
         MENUITEM "Move",                        ID_ELEMENT_MOVE
         MENUITEM "Delete",                      ID_ELEMENT_DELETE
+        MENUITEM SEPARATOR
+        MENUITEM "Send to Back",                ID_ELEMENT_SENDTOBACK
     END
     POPUP "no element"
     BEGIN
@@ -98,58 +100,6 @@ END
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-IDR_MAINFRAME           ICON                    "res\\Sketcher.ico"
-
-IDR_SketcherTYPE        ICON                    "res\\SketcherDoc.ico"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
-
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Toolbar
-//
-
-IDR_MAINFRAME TOOLBAR 16, 15
-BEGIN
-    BUTTON      ID_FILE_NEW
-    BUTTON      ID_FILE_OPEN
-    SEPARATOR
-    BUTTON      ID_FILE_SAVE
-    SEPARATOR
-    BUTTON      ID_EDIT_CUT
-    BUTTON      ID_EDIT_COPY
-    BUTTON      ID_EDIT_PASTE
-    SEPARATOR
-    BUTTON      ID_FILE_PRINT
-    BUTTON      ID_APP_ABOUT
-    SEPARATOR
-    BUTTON      ID_ELEMENT_LINE
-    SEPARATOR
-    BUTTON      ID_ELEMENT_RECTANGLE
-    BUTTON      ID_ELEMENT_CIRCLE
-    BUTTON      ID_ELEMENT_CURVE
-    SEPARATOR
-    BUTTON      ID_COLOR_BLACK
-    BUTTON      ID_COLOR_RED
-    BUTTON      ID_COLOR_GREEN
-    BUTTON      ID_COLOR_BLUE
-END
-
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -237,6 +187,58 @@ BEGIN
     BEGIN
         MENUITEM "&About Sketcher...",          ID_APP_ABOUT
     END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+IDR_MAINFRAME           ICON                    "res\\Sketcher.ico"
+
+IDR_SketcherTYPE        ICON                    "res\\SketcherDoc.ico"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDR_MAINFRAME           BITMAP                  "res\\Toolbar.bmp"
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Toolbar
+//
+
+IDR_MAINFRAME TOOLBAR 16, 15
+BEGIN
+    BUTTON      ID_FILE_NEW
+    BUTTON      ID_FILE_OPEN
+    SEPARATOR
+    BUTTON      ID_FILE_SAVE
+    SEPARATOR
+    BUTTON      ID_EDIT_CUT
+    BUTTON      ID_EDIT_COPY
+    BUTTON      ID_EDIT_PASTE
+    SEPARATOR
+    BUTTON      ID_FILE_PRINT
+    BUTTON      ID_APP_ABOUT
+    SEPARATOR
+    BUTTON      ID_ELEMENT_LINE
+    SEPARATOR
+    BUTTON      ID_ELEMENT_RECTANGLE
+    BUTTON      ID_ELEMENT_CIRCLE
+    BUTTON      ID_ELEMENT_CURVE
+    SEPARATOR
+    BUTTON      ID_COLOR_BLACK
+    BUTTON      ID_COLOR_RED
+    BUTTON      ID_COLOR_GREEN
+    BUTTON      ID_COLOR_BLUE
 END
 
 
@@ -469,13 +471,17 @@ END
 STRINGTABLE
 BEGIN
     ID_ELEMENT_LINE         "Draw lines"
-    ID_ELEMENT_RECTANGLE     "\nDraw Rectangle"
-    ID_ELEMENT_CIRCLE        "\nDraw Circle"
-    ID_ELEMENT_CURVE         "\nDraw Curve"
     ID_COLOR_BLACK          "\nSet color black"
     ID_COLOR_RED            "\nSet color red"
     ID_COLOR_GREEN          "\nSet color green"
     ID_COLOR_BLUE           "\nSet color blue"
+END
+
+STRINGTABLE
+BEGIN
+    ID_ELEMENT_CIRCLE       "\nDraw Circle"
+    ID_ELEMENT_RECTANGLE    "\nDraw Rectangle"
+    ID_ELEMENT_CURVE        "\nDraw Curve"
 END
 
 #endif    // English (United States) resources

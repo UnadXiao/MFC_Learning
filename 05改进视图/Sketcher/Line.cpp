@@ -26,6 +26,13 @@ void CLine::Draw(CDC * pDC, std::shared_ptr<CElement> pElement)
 	pDC->SelectObject(pOldPen);		// Restore the old pen
 }
 
+void CLine::Move(const CSize & aSize)
+{
+	m_StartPoint += aSize;		// Move the start point
+	m_EndPoint += aSize;		// and the end point
+	m_EnclosingRect += aSize;		// Move the enclosing rectangle
+}
+
 CLine::CLine(const CPoint & start, const CPoint & end, COLORREF color) :
 	CElement{start, color}, m_EndPoint(end)
 {

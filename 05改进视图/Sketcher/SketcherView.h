@@ -54,14 +54,22 @@ protected:
 	// First point recorded for an element
 	CPoint m_FirstPoint;
 	CPoint m_SecondPoint;                          // Subsequent point recorded for an element
+	CPoint m_CursorPos;		// Cursor position
+	CPoint m_FirstPos;		// Original position in a move
 	std::shared_ptr<CElement> m_pSelected;		// Records element under the cursor
 	std::shared_ptr<CElement> m_pTempElement;		// Temporary element
-	virtual void OnUpdate(CView* /*pSender*/, LPARAM /*lHint*/, CObject* /*pHint*/);
+	bool m_MoveMode{ false };		// Move element flag
+	virtual void OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint);
+	void MoveElement(CClientDC& aDC, const CPoint& point);		// Move an element
+
 public:
 	virtual void OnInitialUpdate();
 	afx_msg void OnContextMenu(CWnd* /*pWnd*/, CPoint /*point*/);
 	afx_msg void OnElementMove();
 	afx_msg void OnElementDelete();
+	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
+	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
+	afx_msg void OnElementSendtoback();
 };
 
 #ifndef _DEBUG  // debug version in SketcherView.cpp

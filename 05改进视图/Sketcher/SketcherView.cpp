@@ -36,6 +36,9 @@ BEGIN_MESSAGE_MAP(CSketcherView, CScrollView)
 	ON_WM_CONTEXTMENU()
 	ON_COMMAND(ID_ELEMENT_MOVE, &CSketcherView::OnElementMove)
 	ON_COMMAND(ID_ELEMENT_DELETE, &CSketcherView::OnElementDelete)
+	ON_WM_RBUTTONDOWN()
+	ON_WM_RBUTTONUP()
+	ON_COMMAND(ID_ELEMENT_SENDTOBACK, &CSketcherView::OnElementSendtoback)
 END_MESSAGE_MAP()
 
 // CSketcherView construction/destruction
@@ -180,10 +183,20 @@ void CSketcherView::OnLButtonDown(UINT nFlags, CPoint point)
 	CClientDC aDC{ this };		// Create a device context
 	OnPrepareDC(&aDC);		// Get origin adjusted
 	aDC.DPtoLP(&point);		// Convert point to logical coordinates
-	m_FirstPoint = point;		// Record the cursor position
-	SetCapture();		// Capture subsequent mouse message
-
-	CView::OnLButtonDown(nFlags, point);
+	if (m_MoveMode)
+	{
+		// In moving mode, so drop the element
+		m_MoveMode = false;		// Kill move mode
+		auto pElement(m_pSelected);		// Store selected address
+		m_pSelected.reset();		// De-select the element
+		GetDocument()->UpdateAllViews(nullptr, 0, pElement.get());		// Redraw all the views
+	}
+	else
+	{
+		m_FirstPoint = point;		// Record the cursor position
+		SetCapture();		// Capture subsequent mouse message
+	}
+	//CView::OnLButtonDown(nFlags, point);
 }
 
 
@@ -194,7 +207,11 @@ void CSketcherView::OnMouseMove(UINT nFlags, CPoint point)
 	OnPrepareDC(&aDC);		// Get origin adjusted
 	aDC.DPtoLP(&point);		// Convert point to logical coordinates
 
-	// Verify the left button is down and mouse messages are captured
+	// If we are in move mode, move the selected element
+	if (m_MoveMode)
+	{
+		MoveElement(aDC, point);		// Move the element
+	}
 	if ((nFlags & MK_LBUTTON) && (this == GetCapture()))		// Verify the left button is down
 	{
 		m_SecondPoint = point;		// Save the current cursor position
@@ -257,6 +274,25 @@ void CSketcherView::OnUpdate(CView* pSender, LPARAM lHint, CObject* pHint)
 	}
 }
 
+void CSketcherView::MoveElement(CClientDC & aDC, const CPoint & point)
+{
+	CSize distance{ point - m_CursorPos };		// Get move distance
+	m_CursorPos = point;		// Set current point as 1st for next time
+	// If there is an element selected, move it
+	if (m_pSelected)
+	{
+		CSketcherDoc *pDoc{ GetDocument() };		// Get the document pointer
+		pDoc->UpdateAllViews(this, 0L, m_pSelected.get());		// Update all except this
+
+		aDC.SetROP2(R2_NOTXORPEN);
+		m_pSelected->Draw(&aDC, m_pSelected);		// Draw element to erase it
+		m_pSelected->Move(distance);		// Now move the element
+		m_pSelected->Draw(&aDC, m_pSelected);		// Draw the moved element
+
+		pDoc->UpdateAllViews(this, 0, m_pSelected.get());		// Update all except this
+	}
+}
+
 
 void CSketcherView::OnInitialUpdate()
 {
@@ -308,7 +344,13 @@ void CSketcherView::OnContextMenu(CWnd* pWnd, CPoint point)
 
 void CSketcherView::OnElementMove()
 {
-	// TODO: Add your command handler code here
+	CClientDC aDC{ this };
+	OnPrepareDC(&aDC);		// Set up the device context
+	GetCursorPos(&m_CursorPos);		// Get cursor position in screen coords
+	ScreenToClient(&m_CursorPos);		// Convert to client coords
+	aDC.DPtoLP(&m_CursorPos);		// Convert to logical coords
+	m_FirstPoint = m_CursorPos;		// Remember first position
+	m_MoveMode = true;		// Start move mode
 }
 
 
@@ -319,4 +361,38 @@ void CSketcherView::OnElementDelete()
 		GetDocument()->DeleteElement(m_pSelected);		// Delete the element
 		m_pSelected.reset();
 	}
+}
+
+
+void CSketcherView::OnRButtonDown(UINT nFlags, CPoint point)
+{
+	if (m_MoveMode)
+	{
+		// In moving mode, so drop element back in original position
+		CClientDC aDC{ this };
+		OnPrepareDC(&aDC);		// Get origin adjusted
+		MoveElement(aDC, m_FirstPoint);		// Move element to original position
+		m_pSelected.reset();		// De-select element
+		GetDocument()->UpdateAllViews(nullptr);		// Redraw all the views
+	}
+	//CScrollView::OnRButtonDown(nFlags, point);
+}
+
+
+void CSketcherView::OnRButtonUp(UINT nFlags, CPoint point)
+{
+	if (m_MoveMode)
+	{
+		m_MoveMode = false;
+	}
+	else
+	{
+		CScrollView::OnRButtonUp(nFlags, point);
+	}
+}
+
+
+void CSketcherView::OnElementSendtoback()
+{
+	GetDocument()->SendToBack(m_pSelected);		// Move element to end of list
 }

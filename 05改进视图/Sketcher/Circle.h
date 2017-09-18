@@ -6,6 +6,7 @@ class CCircle :
 public:
 	virtual ~CCircle();
 	virtual void Draw(CDC *pDC, std::shared_ptr<CElement> pElement = nullptr) override;
+	virtual void Move(const CSize& aSize) override;		// Function to move an element
 	CCircle(const CPoint& start, const CPoint& end, COLORREF color);
 
 protected:
