@@ -48,8 +48,7 @@ END_MESSAGE_MAP()
 CSketcherView::CSketcherView()
 	: m_FirstPoint{ CPoint{} }
 {
-	// TODO: add construction code here
-
+	SetScrollSizes(MM_TEXT, CSize{});		// Set arbitrary scroolers
 }
 
 // Create an element of the current type
@@ -300,6 +299,7 @@ void CSketcherView::MoveElement(CClientDC & aDC, const CPoint & point)
 
 void CSketcherView::OnInitialUpdate()
 {
+	ResetScrollSizes();		// Set up the scrollbars
 	CScrollView::OnInitialUpdate();
 
 	CSize DocSize{ 3000, 3000 };		// Document 30*30ins in MM_LOENGLISH
@@ -409,6 +409,38 @@ void CSketcherView::OnViewScale()
 	if (aDlg.DoModal() == IDOK)
 	{
 		m_Scale = aDlg.m_Scale;		// Get the new scale
+		ResetScrollSizes();		// Adjust scrolling to the new scale
 		InvalidateRect(nullptr);		// Invalidate the whole window
 	}
+}
+
+
+void CSketcherView::OnPrepareDC(CDC* pDC, CPrintInfo* pInfo)
+{
+	CScrollView::OnPrepareDC(pDC, pInfo);
+
+	CSketcherDoc* pDoc{ GetDocument() };
+	pDC->SetMapMode(MM_ANISOTROPIC);		// Set the map mode
+	CSize DocSize{ pDoc->GetDocSize() };		// Get the document size
+
+	pDC->SetWindowExt(DocSize);		// Now set the window extent
+
+	// Get the number of pixels per inch in x and y
+	int xLogPixels{ pDC->GetDeviceCaps(LOGPIXELSX) };
+	int yLogPixels{ pDC->GetDeviceCaps(LOGPIXELSY) };
+
+	// Calculate the viewport extent in x and y for the current scale
+	int xExtent{ (DocSize.cx * m_Scale * xLogPixels) / 100 };
+	int yExtent{ (DocSize.cy * m_Scale * yLogPixels) / 100 };
+
+	pDC->SetViewportExt(xExtent, yExtent);		// Set viewport extent
+}
+
+void CSketcherView::ResetScrollSizes()
+{
+	CClientDC	aDC{ this };
+	OnPrepareDC(&aDC);		// Set up the device context
+	CSize DocSize{ GetDocument()->GetDocSize() };
+	aDC.LPtoDP(&DocSize);		// Get the size in pixels
+	SetScrollSizes(MM_TEXT, DocSize);		// Set up the scrollbars
 }

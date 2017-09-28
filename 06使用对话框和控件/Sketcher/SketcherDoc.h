@@ -78,6 +78,7 @@ public:
 	std::shared_ptr<CElement> FindElement(const CPoint& point) const;
 
 	int GetPenWidth() const { return m_PenWidth; }		// Get current pen width
+	CSize GetDocSize() const { return m_DocSize; }		// Retrieve the document size
 
 	void SendToBack(std::shared_ptr<CElement>& pElement)
 	{
@@ -93,6 +94,7 @@ protected:
 	ElementColor m_Color {ElementColor::BLACK};		// Current drawing color
 	std::list<std::shared_ptr<CElement>> m_Sketch;		// A list containing the sketch
 	int m_PenWidth{};		// Current pen width
+	CSize m_DocSize{ CSize {3000, 3000} };		// Document size
 
 public:
 	afx_msg void OnUpdateColorBlack(CCmdUI *pCmdUI);
