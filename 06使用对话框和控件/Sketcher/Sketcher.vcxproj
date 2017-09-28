@@ -197,6 +197,7 @@
     <ClInclude Include="PenDialog.h" />
     <ClInclude Include="Rectangle.h" />
     <ClInclude Include="Resource.h" />
+    <ClInclude Include="ScaleDialog.h" />
     <ClInclude Include="Sketcher.h" />
     <ClInclude Include="SketcherDoc.h" />
     <ClInclude Include="SketcherView.h" />
@@ -212,6 +213,7 @@
     <ClCompile Include="MainFrm.cpp" />
     <ClCompile Include="PenDialog.cpp" />
     <ClCompile Include="Rectangle.cpp" />
+    <ClCompile Include="ScaleDialog.cpp" />
     <ClCompile Include="Sketcher.cpp" />
     <ClCompile Include="SketcherDoc.cpp" />
     <ClCompile Include="SketcherView.cpp" />

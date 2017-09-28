@@ -56,6 +56,7 @@ protected:
 	CPoint m_SecondPoint;                          // Subsequent point recorded for an element
 	CPoint m_CursorPos;		// Cursor position
 	CPoint m_FirstPos;		// Original position in a move
+	int m_Scale{1};		// Current view scale
 	std::shared_ptr<CElement> m_pSelected;		// Records element under the cursor
 	std::shared_ptr<CElement> m_pTempElement;		// Temporary element
 	bool m_MoveMode{ false };		// Move element flag
@@ -70,6 +71,7 @@ public:
 	afx_msg void OnRButtonDown(UINT nFlags, CPoint point);
 	afx_msg void OnRButtonUp(UINT nFlags, CPoint point);
 	afx_msg void OnElementSendtoback();
+	afx_msg void OnViewScale();
 };
 
 #ifndef _DEBUG  // debug version in SketcherView.cpp

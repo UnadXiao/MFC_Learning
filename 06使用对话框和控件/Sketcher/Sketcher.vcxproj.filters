@@ -66,6 +66,9 @@
     <ClInclude Include="PenDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="ScaleDialog.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Sketcher.cpp">
@@ -102,6 +105,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="PenDialog.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ScaleDialog.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

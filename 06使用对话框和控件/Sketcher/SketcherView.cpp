@@ -15,6 +15,7 @@
 #include "Rectangle.h"
 #include "Circle.h"
 #include "Curve.h"
+#include "ScaleDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -39,6 +40,7 @@ BEGIN_MESSAGE_MAP(CSketcherView, CScrollView)
 	ON_WM_RBUTTONDOWN()
 	ON_WM_RBUTTONUP()
 	ON_COMMAND(ID_ELEMENT_SENDTOBACK, &CSketcherView::OnElementSendtoback)
+	ON_COMMAND(ID_VIEW_SCALE, &CSketcherView::OnViewScale)
 END_MESSAGE_MAP()
 
 // CSketcherView construction/destruction
@@ -397,4 +399,16 @@ void CSketcherView::OnRButtonUp(UINT nFlags, CPoint point)
 void CSketcherView::OnElementSendtoback()
 {
 	GetDocument()->SendToBack(m_pSelected);		// Move element to end of list
+}
+
+
+void CSketcherView::OnViewScale()
+{
+	CScaleDialog aDlg;		// Create a dialog object
+	aDlg.m_Scale = m_Scale;		// Pass the view scale to the dialog
+	if (aDlg.DoModal() == IDOK)
+	{
+		m_Scale = aDlg.m_Scale;		// Get the new scale
+		InvalidateRect(nullptr);		// Invalidate the whole window
+	}
 }
