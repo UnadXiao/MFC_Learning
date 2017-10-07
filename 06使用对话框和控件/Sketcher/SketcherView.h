@@ -74,6 +74,7 @@ public:
 	afx_msg void OnElementSendtoback();
 	afx_msg void OnViewScale();
 	virtual void OnPrepareDC(CDC* pDC, CPrintInfo* pInfo = NULL);
+	afx_msg void OnUpdateScale(CCmdUI *pCmdUI);
 };
 
 #ifndef _DEBUG  // debug version in SketcherView.cpp

@@ -41,6 +41,8 @@ BEGIN_MESSAGE_MAP(CSketcherDoc, CDocument)
 	ON_UPDATE_COMMAND_UI(ID_ELEMENT_CIRCLE, &CSketcherDoc::OnUpdateElemetCircle)
 	ON_UPDATE_COMMAND_UI(ID_ELEMENT_CURVE, &CSketcherDoc::OnUpdateElemetCurve)
 	ON_COMMAND(ID_PEN_WIDTH, &CSketcherDoc::OnPenWidth)
+	ON_COMMAND(ID_ELEMET_TEXT, &CSketcherDoc::OnElemetText)
+	ON_UPDATE_COMMAND_UI(ID_ELEMET_TEXT, &CSketcherDoc::OnUpdateElemetText)
 END_MESSAGE_MAP()
 
 
@@ -293,4 +295,17 @@ void CSketcherDoc::OnPenWidth()
 	{
 		m_PenWidth = aDlg.m_PenWidth;		// When closed with OK, get the pen width
 	}
+}
+
+
+void CSketcherDoc::OnElemetText()
+{
+	m_Element = ElementType::TEXT;
+}
+
+
+void CSketcherDoc::OnUpdateElemetText(CCmdUI *pCmdUI)
+{
+	// Set checked if the current element is text
+	pCmdUI->SetCheck(m_Element == ElementType::TEXT);
 }

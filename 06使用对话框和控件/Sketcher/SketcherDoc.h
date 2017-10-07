@@ -106,4 +106,6 @@ public:
 	afx_msg void OnUpdateElemetCircle(CCmdUI *pCmdUI);
 	afx_msg void OnUpdateElemetCurve(CCmdUI *pCmdUI);
 	afx_msg void OnPenWidth();
+	afx_msg void OnElemetText();
+	afx_msg void OnUpdateElemetText(CCmdUI *pCmdUI);
 };

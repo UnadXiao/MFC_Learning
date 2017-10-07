@@ -87,6 +87,8 @@ BEGIN
         MENUITEM "Red",                         ID_COLOR_RED
         MENUITEM "Green",                       ID_COLOR_GREEN
         MENUITEM "Blue",                        ID_COLOR_BLUE
+        MENUITEM SEPARATOR
+        MENUITEM "Text",                        ID_ELEMENT_TEXT
     END
 END
 
@@ -124,11 +126,12 @@ BEGIN
     LTEXT           "View Scale",IDC_STATIC,134,52,37,8
 END
 
-IDD_DIALOG1 DIALOGEX 0, 0, 310, 177
+IDD_TEXT_DLG DIALOGEX 0, 0, 310, 177
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "Dialog"
+CAPTION "Enter Text"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
+    EDITTEXT        IDC_EDIT_TEXT,55,32,156,82,ES_MULTILINE | ES_AUTOVSCROLL
     DEFPUSHBUTTON   "OK",IDOK,199,156,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,253,156,50,14
 END
@@ -169,7 +172,7 @@ BEGIN
         BOTTOMMARGIN, 170
     END
 
-    IDD_DIALOG1, DIALOG
+    IDD_TEXT_DLG, DIALOG
     BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 303
@@ -195,7 +198,7 @@ BEGIN
     0
 END
 
-IDD_DIALOG1 AFX_DIALOG_LAYOUT
+IDD_TEXT_DLG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -280,6 +283,8 @@ BEGIN
         MENUITEM "Rectangle",                   ID_ELEMENT_RECTANGLE
         MENUITEM "Circle",                      ID_ELEMENT_CIRCLE
         MENUITEM "Curve",                       ID_ELEMENT_CURVE
+        MENUITEM SEPARATOR
+        MENUITEM "Text",                        ID_ELEMET_TEXT
     END
     POPUP "&Pen"
     BEGIN
@@ -587,6 +592,7 @@ END
 STRINGTABLE
 BEGIN
     ID_ELEMENT_LINE         "Draw lines"
+    ID_INDICATOR_SCALE      "View Scale : 1"
     ID_COLOR_BLACK          "\nSet color black"
     ID_COLOR_RED            "\nSet color red"
     ID_COLOR_GREEN          "\nSet color green"
@@ -599,6 +605,7 @@ BEGIN
     ID_ELEMENT_RECTANGLE    "\nDraw Rectangle"
     ID_ELEMENT_CURVE        "\nDraw Curve"
     ID_PEN_WIDTH            "Change pen width\nShow pen width options"
+    ID_ELEMET_TEXT          "Write Text\nSelect Text"
 END
 
 #endif    // English (United States) resources

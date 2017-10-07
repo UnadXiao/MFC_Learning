@@ -16,6 +16,8 @@
 #include "Circle.h"
 #include "Curve.h"
 #include "ScaleDialog.h"
+#include "Text.h"
+#include "TextDialog.h"
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -41,6 +43,7 @@ BEGIN_MESSAGE_MAP(CSketcherView, CScrollView)
 	ON_WM_RBUTTONUP()
 	ON_COMMAND(ID_ELEMENT_SENDTOBACK, &CSketcherView::OnElementSendtoback)
 	ON_COMMAND(ID_VIEW_SCALE, &CSketcherView::OnViewScale)
+	ON_UPDATE_COMMAND_UI(ID_INDICATOR_SCALE, &CSketcherView::OnUpdateScale)
 END_MESSAGE_MAP()
 
 // CSketcherView construction/destruction
@@ -186,6 +189,8 @@ void CSketcherView::OnLButtonDown(UINT nFlags, CPoint point)
 	CClientDC aDC{ this };		// Create a device context
 	OnPrepareDC(&aDC);		// Get origin adjusted
 	aDC.DPtoLP(&point);		// Convert point to logical coordinates
+	CSketcherDoc *pDoc{ GetDocument() };		// Get a document pointer
+
 	if (m_MoveMode)
 	{
 		// In moving mode, so drop the element
@@ -193,6 +198,22 @@ void CSketcherView::OnLButtonDown(UINT nFlags, CPoint point)
 		auto pElement(m_pSelected);		// Store selected address
 		m_pSelected.reset();		// De-select the element
 		GetDocument()->UpdateAllViews(nullptr, 0, pElement.get());		// Redraw all the views
+	}
+	else if (pDoc->GetElementType() == ElementType::TEXT)
+	{
+		CTextDialog aDlg;
+		if (aDlg.DoModal() == IDOK)
+		{
+			// Exit OK so create a text element
+			CSize textExtent{ aDC.GetOutputTextExtent(aDlg.m_TextString) };
+			textExtent.cx *= m_Scale;
+			textExtent.cy *= m_Scale;
+			std::shared_ptr<CElement> pTextElement
+			{ std::make_shared<CText>(point, point + textExtent, aDlg.m_TextString, static_cast<COLORREF>(pDoc->GetElementColor())) };
+
+			pDoc->AddElement(pTextElement);		// Add the element to the document
+			pDoc->UpdateAllViews(nullptr, 0, pTextElement.get());		// Update all views
+		}
 	}
 	else
 	{
@@ -287,11 +308,24 @@ void CSketcherView::MoveElement(CClientDC & aDC, const CPoint & point)
 		CSketcherDoc *pDoc{ GetDocument() };		// Get the document pointer
 		pDoc->UpdateAllViews(this, 0L, m_pSelected.get());		// Update all except this
 
-		aDC.SetROP2(R2_NOTXORPEN);
-		m_pSelected->Draw(&aDC, m_pSelected);		// Draw element to erase it
-		m_pSelected->Move(distance);		// Now move the element
-		m_pSelected->Draw(&aDC, m_pSelected);		// Draw the moved element
+		if (typeid(*(m_pSelected.get())) == typeid(CText))
+		{
+			// The element is text so use this method
+			CRect oldRect{ m_pSelected->GetEnclosingRect() };		// Get old bound rect
+			aDC.LPtoDP(oldRect);		// Convert to client coords
+			m_pSelected->Move(distance);		// Move the element
+			InvalidateRect(&oldRect);
 
+			UpdateWindow();		// Redraw immediately
+			m_pSelected->Draw(&aDC, m_pSelected);		// Draw highlighted
+		}
+		else
+		{
+			aDC.SetROP2(R2_NOTXORPEN);
+			m_pSelected->Draw(&aDC, m_pSelected);		// Draw element to erase it
+			m_pSelected->Move(distance);		// Now move the element
+			m_pSelected->Draw(&aDC, m_pSelected);		// Draw the moved element
+		}
 		pDoc->UpdateAllViews(this, 0, m_pSelected.get());		// Update all except this
 	}
 }
@@ -336,9 +370,7 @@ void CSketcherView::OnContextMenu(CWnd* pWnd, CPoint point)
 		menu.CheckMenuItem(ID_ELEMENT_RECTANGLE, (ElementType::RECTANGLE == type ? MF_CHECKED : MF_UNCHECKED | MF_BYCOMMAND));
 		menu.CheckMenuItem(ID_ELEMENT_CIRCLE, (ElementType::CIRCLE == type ? MF_CHECKED : MF_UNCHECKED | MF_BYCOMMAND));
 		menu.CheckMenuItem(ID_ELEMENT_CURVE, (ElementType::CURVE == type ? MF_CHECKED : MF_UNCHECKED | MF_BYCOMMAND));
-
-
-
+		menu.CheckMenuItem(ID_ELEMENT_TEXT, (ElementType::TEXT == type ? MF_CHECKED : MF_UNCHECKED | MF_BYCOMMAND));
 	}
 	ASSERT(pContext != nullptr);		// Ensure it's there
 
@@ -443,4 +475,12 @@ void CSketcherView::ResetScrollSizes()
 	CSize DocSize{ GetDocument()->GetDocSize() };
 	aDC.LPtoDP(&DocSize);		// Get the size in pixels
 	SetScrollSizes(MM_TEXT, DocSize);		// Set up the scrollbars
+}
+
+void CSketcherView::OnUpdateScale(CCmdUI *pCmdUI)
+{
+	pCmdUI->Enable();
+	CString scaleStr;
+	scaleStr.Format(_T("View Scale : %d"), m_Scale);
+	pCmdUI->SetText(scaleStr);
 }
